@@ -12,31 +12,30 @@ export class UsersController {
 
   @Post()
   @ApiOperation({ summary: 'Create user' })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  createUser(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.newUser(createUserDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Show all users' })
-  findAll() {
-    return this.usersService.findAll();
+  getAllUsers() {
+    return this.usersService.getAllUser();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Show user details'})
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  getUser(@Param('id') id: string) {
+    return this.usersService.getUser(id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update user data'})
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateUser(id, updateUserDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user'})
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  removeUser(@Param('id') id: string) {
+    return this.usersService.removeUser(id);
   }
 }

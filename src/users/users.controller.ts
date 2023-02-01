@@ -19,7 +19,7 @@ export class UsersController {
   @Get()
   @ApiOperation({ summary: 'Show all users' })
   getAllUsers() {
-    return this.usersService.getAllUser();
+    return this.usersService.getAllUsers();
   }
 
   @Get(':id')

@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/login-auth.dto';
-import { UpdateAuthDto } from './dto/register-auth.dto';
+import { HttpException, Injectable } from '@nestjs/common';
+import { LoginAuthDto } from './dto/login-auth.dto';
+import { RegisterAuthDto } from './dto/register-auth.dto';
+
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from 'src/users/schemas/user.schema';
+
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+
+  constructor(@InjectModel(User.name) private UserModel: Model<UserDocument>){}
+
+  async login(loginAuthDto: LoginAuthDto) {
+
+    const { password, email } = loginAuthDto;
+
+    const findUser = await this.UserModel.findOne({ email });
+
+    if(!findUser){
+      throw new HttpException('USER_NOT_FOUND', 404);
+    }
+
+    const passwordCheck = await bcrypt.compare(password, findUser.password);
+
+    if(!passwordCheck){
+      throw new HttpException('PASSWORD_INCORRECT', 403);
+    }
+
+    const data = findUser;
+
+    return data;
+
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async register(registerAuthDto: RegisterAuthDto) {
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    const { password } = registerAuthDto;
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    const passwordTreatment = await bcrypt.hash(password, 10);
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    registerAuthDto = {...registerAuthDto, password: passwordTreatment};
+
+    return await this.UserModel.create(registerAuthDto);
   }
 }
